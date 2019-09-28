@@ -10,6 +10,9 @@
     "type": "git",
     "url": "git+https://github.com/suvadip172308/api-excel.git"
   },
+  "engines": {
+    "node": "10.15.2"
+  },
   "keywords": [
     "nodejs"
   ],
@@ -18,5 +21,8 @@
   "bugs": {
     "url": "https://github.com/suvadip172308/api-excel/issues"
   },
-  "homepage": "https://github.com/suvadip172308/api-excel#readme"
+  "homepage": "https://github.com/suvadip172308/api-excel#readme",
+  "dependencies": {
+    "express": "4.17.1"
+  }
 }
