@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/suvadip172308/api-excel#readme",
   "dependencies": {
-    "express": "4.17.1"
+    "express": "4.17.1",
+    "mongoose": "5.7.1"
   }
 }
