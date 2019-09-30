@@ -64,4 +64,6 @@ async function createCourse(course) {
 async function getCourse(){
   const courses = await Course.find();
   console.log('Courses: ', courses);
+  
+  return courses;
 }
