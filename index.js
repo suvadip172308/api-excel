@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 
 const app = express();
 
-const DB_URL = process.env.MONGODB_URI || 'mongodb://localhost/playground';
+const DB_URL = process.env.MONGODB_URI ?
+  `${process.env.MONGODB_URI}/playground` : 'mongodb://localhost/playground';
 
 mongoose.connect(DB_URL)
   .then(() => console.log('Connected to Mongodb...'))
