@@ -26,19 +26,18 @@ app.use(express.urlencoded({extended: true}));
 
 
 // Get course
-app.get('/', async (req, res) => {
+app.get('/api/courses', async (req, res) => {
   const result = await getCourse();
   res.send(result);
 });
 
 // POST course
-app.post('/', async (req, res) => {
+app.post('/api/courses', async (req, res) => {
   const {name, author, tags, isPublished} = {...req.body};
   const course = {
     name,
     author,
     tags,
-    date: { type: Date, default: Date.now },
     isPublished
   };
 
@@ -54,10 +53,12 @@ app.listen(port, () => console.log(`Listining at port no: ${port} ...`));
 
 async function createCourse(course) {
   // create instance
-  const course = new Course(course);
+  const newCourse = new Course(course);
 
-  const result = await course.save();
+  const result = await newCourse.save();
   console.log('Course: ', result);
+
+  return result;
 }
 
 async function getCourse(){
