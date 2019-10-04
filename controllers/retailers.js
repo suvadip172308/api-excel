@@ -5,7 +5,7 @@ exports.getRetailers = async () => {
   const offset = 20;
   return await Retailer.find()
     .limit(offset)
-    .select({_id: 0, __v: 0});
+    .select({_id: 0});
 };
 
 
@@ -15,7 +15,7 @@ exports.createRetailer = async (retailer) => {
     .sort({_id: -1})
     .limit(1)
     .select(
-      {_id: 0, __v: 0, retailerId: 1}
+      {_id: 0, retailerId: 1}
     );
 
   const lastId = lastItem ? lastItem.retailerId : 1000;
