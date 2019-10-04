@@ -1,15 +1,14 @@
 const express = require('express');
 const Joi = require('joi');
 
-const { Retailer } = require('../models/model.js');
 const retailerController = require('../controllers/retailers');
 
 const router = express.Router();
 
-/**GET Courses */
+/** GET Courses */
 router.get('/', async (req, res) => {
   const retailers = await retailerController.getRetailers();
-  
+
   res.send(retailers);
 });
 

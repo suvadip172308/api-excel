@@ -13,7 +13,7 @@ mongoose.connect(DB_URL)
 
 // Middleware
 app.use(express.json());
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 
 
 app.use('/api/retailers', retailers);
@@ -21,7 +21,3 @@ app.use('/api/retailers', retailers);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listining at port no: ${port} ...`));
-
-
-
-

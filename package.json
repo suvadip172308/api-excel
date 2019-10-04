@@ -27,5 +27,9 @@
     "express": "4.17.1",
     "joi": "^14.3.1",
     "mongoose": "5.7.1"
+  },
+  "devDependencies": {
+    "eslint": "^6.5.1",
+    "eslint-config-airbnb-base": "^14.0.0"
   }
 }
