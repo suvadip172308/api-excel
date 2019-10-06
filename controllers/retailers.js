@@ -4,8 +4,12 @@ const { Retailer } = require('../models/model.js');
 exports.getRetailers = async () => {
   const offset = 20;
   return Retailer.find()
-    .limit(offset)
-    .select({ _id: 0 });
+    .limit(offset);
+};
+
+/** get a retailer */
+exports.getRetailerDetails = async (id) => {
+  return Retailer.findOne({ _id: id });
 };
 
 

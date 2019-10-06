@@ -5,20 +5,28 @@ const retailerController = require('../controllers/retailers');
 
 const router = express.Router();
 
-/** get courses */
+/** get all retailers */
 router.get('/', async (req, res) => {
   const retailers = await retailerController.getRetailers();
 
   res.send(retailers);
 });
 
-/** create course */
+/** get single retailer */
+router.get('/:id', async (req, res) => {
+  const id = req.params.id;
+  const retailer = await retailerController.getRetailerDetails(id);
+
+  res.send(retailer);
+});
+
+/** create retailer */
 router.post('/', async (req, res) => {
   const createdRetailer = await retailerController.createRetailer(req);
   res.send(createdRetailer);
 });
 
-/** update  course */
+/** update  retailer */
 router.put('/:id', async (req, res) => {
   const id = req.params.id;
   const updatedRetailer = await retailerController.updateRetailer(id, req);
@@ -26,7 +34,7 @@ router.put('/:id', async (req, res) => {
   res.send(updatedRetailer);
 });
 
-/** delete course */
+/** delete retailer */
 router.delete('/:id', async (req, res) => {
   const id = req.params.id;
   const detetedRetailer = await retailerController.deleteRetailer(id);
