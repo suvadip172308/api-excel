@@ -1,20 +1,25 @@
 const { Retailer } = require('../models/model.js');
 
 /** get retailers */
-exports.getRetailers = async () => {
+exports.getRetailers = async (req, res) => {
   const offset = 20;
-  return Retailer.find()
+  const retailers = await Retailer.find()
     .limit(offset);
+
+  res.send(retailers);
 };
 
 /** get a retailer */
-exports.getRetailerDetails = async (id) => {
-  return Retailer.findOne({ _id: id });
+exports.getRetailerDetails = async (req, res) => {
+  const id = req.params.id;
+  const retailer = await Retailer.findOne({ _id: id });
+
+  res.send(retailer);
 };
 
 
 /** create a new retailer */
-exports.createRetailer = async (req) => {
+exports.createRetailer = async (req, res) => {
   const { retailerName, companyName, balance } = { ...req.body };
   const retailer = {
     retailerName,
@@ -22,15 +27,17 @@ exports.createRetailer = async (req) => {
     balance
   };
 
-  const newRetailer = new Retailer(retailer);
-  return newRetailer.save();
+  const createdRetailer = await new Retailer(retailer).save();
+
+  res.send(createdRetailer);
 };
 
 /** update retailer */
-exports.updateRetailer = async (id, req) => {
+exports.updateRetailer = async (req, res) => {
+  const id = req.params.id;
   const { companyName, balance } = { ...req.body };
   if (!companyName && !balance) {
-    return null;
+    return;
   }
 
   let updateObject = {};
@@ -43,14 +50,19 @@ exports.updateRetailer = async (id, req) => {
     updateObject.balance = balance;
   }
 
-  return Retailer.findOneAndUpdate(
+  const updatedRetailer = await Retailer.findOneAndUpdate(
     { _id: id },
     { $set: updateObject },
     { new: true }
   );
+
+  res.send(updatedRetailer);
 };
 
 /** delete retailer */
-exports.deleteRetailer = async (id) => {
-  return Retailer.deleteOne({ _id: id });
+exports.deleteRetailer = async (req, res) => {
+  const id = req.params.id;
+  const detetedRetailer = await Retailer.deleteOne({ _id: id });
+
+  res.send(detetedRetailer);
 };

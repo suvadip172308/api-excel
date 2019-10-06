@@ -5,41 +5,25 @@ const retailerController = require('../controllers/retailers');
 
 const router = express.Router();
 
-/** get all retailers */
-router.get('/', async (req, res) => {
-  const retailers = await retailerController.getRetailers();
-
-  res.send(retailers);
+router.get('/', (req, res) => {
+  retailerController.getRetailers(req, res);
 });
 
-/** get single retailer */
 router.get('/:id', async (req, res) => {
-  const id = req.params.id;
-  const retailer = await retailerController.getRetailerDetails(id);
-
-  res.send(retailer);
+  retailerController.getRetailerDetails(req, res);
 });
 
-/** create retailer */
 router.post('/', async (req, res) => {
-  const createdRetailer = await retailerController.createRetailer(req);
-  res.send(createdRetailer);
+  retailerController.createRetailer(req, res);
 });
 
-/** update  retailer */
 router.put('/:id', async (req, res) => {
-  const id = req.params.id;
-  const updatedRetailer = await retailerController.updateRetailer(id, req);
-
-  res.send(updatedRetailer);
+  retailerController.updateRetailer(req, res);
 });
 
 /** delete retailer */
 router.delete('/:id', async (req, res) => {
-  const id = req.params.id;
-  const detetedRetailer = await retailerController.deleteRetailer(id);
-
-  res.send(detetedRetailer);
+  retailerController.deleteRetailer(req, res);
 });
 
 module.exports = router;
