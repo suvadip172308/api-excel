@@ -7,7 +7,7 @@ const app = express();
 
 const DB_URL = process.env.MONGODB_URI || 'mongodb://localhost/excel';
 
-mongoose.connect(DB_URL)
+mongoose.connect(DB_URL, { useFindAndModify: false })
   .then(() => console.log('Connected to Mongodb...'))
   .catch((err) => console.log('Could not connect to MongoDB...', err));
 

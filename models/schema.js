@@ -1,12 +1,6 @@
 const mongoose = require('mongoose');
 
 const RetailerSchema = new mongoose.Schema({
-  retailerId: {
-    type: Number,
-    required: true,
-    unique: true,
-    dropDups: true
-  },
   retailerName: {
     type: String,
     required: true,

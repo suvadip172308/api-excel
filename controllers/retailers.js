@@ -1,6 +1,6 @@
 const { Retailer } = require('../models/model.js');
 
-/** Get retailers */
+/** get retailers */
 exports.getRetailers = async () => {
   const offset = 20;
   return Retailer.find()
@@ -9,24 +9,44 @@ exports.getRetailers = async () => {
 };
 
 
-/** Create a new retailer */
-exports.createRetailer = async (retailerInfo) => {
-  const lastItem = await Retailer.findOne()
-    .sort({ _id: -1 })
-    .limit(1)
-    .select(
-      { _id: 0, retailerId: 1 }
-    );
-
-  const lastId = lastItem ? lastItem.retailerId : 1000;
-
+/** create a new retailer */
+exports.createRetailer = async (req) => {
+  const { retailerName, companyName, balance } = { ...req.body };
   const retailer = {
-    ...retailerInfo,
-    retailerId: lastId + 1
+    retailerName,
+    companyName,
+    balance
   };
 
   const newRetailer = new Retailer(retailer);
-  const result = await newRetailer.save();
+  return newRetailer.save();
+};
 
-  return result;
+/** update retailer */
+exports.updateRetailer = async (id, req) => {
+  const { companyName, balance } = { ...req.body };
+  if (!companyName && !balance) {
+    return null;
+  }
+
+  let updateObject = {};
+
+  if (companyName) {
+    updateObject.companyName = companyName;
+  }
+
+  if (balance) {
+    updateObject.balance = balance;
+  }
+
+  return Retailer.findOneAndUpdate(
+    { _id: id },
+    { $set: updateObject },
+    { new: true }
+  );
+};
+
+/** delete retailer */
+exports.deleteRetailer = async (id) => {
+  return Retailer.deleteOne({ _id: id });
 };
