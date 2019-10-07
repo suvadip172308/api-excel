@@ -1,6 +1,13 @@
 const mongoose = require('mongoose');
 
 const RetailerSchema = new mongoose.Schema({
+  retailerId: {
+    type: String,
+    minlength: 2,
+    unique: true,
+    dropDups: true,
+    required: true
+  },
   retailerName: {
     type: String,
     required: true,
@@ -13,7 +20,7 @@ const RetailerSchema = new mongoose.Schema({
   },
   balance: {
     type: Number,
-    default: 1000
+    default: 0
   },
   isActivated: {
     type: Boolean,

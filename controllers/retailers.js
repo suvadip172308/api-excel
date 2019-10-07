@@ -2,58 +2,90 @@ const Joi = require('joi');
 
 const { Retailer } = require('../models/model.js');
 const validation = require('../validation/retailer.validation');
+const { ERR_601 } = require('../shared/const');
+const errorObj = require('../shared/error');
 
 /** get retailers */
 exports.getRetailers = async (req, res) => {
   const offset = 20;
-  const retailers = await Retailer.find()
-    .limit(offset);
 
-  res.send(retailers);
+  try {
+    const retailers = await Retailer.find()
+      .limit(offset);
+    res.json(retailers);
+  } catch (err) {
+    res.send(errorObj.sendError(err.code));
+  }
 };
 
 /** get a retailer */
 exports.getRetailerDetails = async (req, res) => {
   const id = req.params.id;
-  
-  const retailer = await Retailer.findOne({ _id: id });
 
-  res.send(retailer);
+  try {
+    const retailer = await Retailer.findOne({ retailerId: id });
+    res.json(retailer);
+  } catch (err) {
+    res.send(errorObj.sendError(err.code, 'Id not found'));
+  }
 };
 
 
 /** create a new retailer */
 exports.createRetailer = async (req, res) => {
-  const { error } = Joi.validate(req.body, validation.retailerSchema);
+  const { error } = Joi.validate(req.body, validation.retailerSaveSchema);
 
   if (error) {
-    res.statussend(error.details[0].message);
+    res.status(ERR_601);
+    res.send(errorObj.sendError(ERR_601, error.details[0].message));
     return;
   }
 
-  const { retailerName, companyName, balance } = { ...req.body };
+  const {
+    retailerId, retailerName, companyName, balance
+  } = { ...req.body };
+
   const retailer = {
+    retailerId,
     retailerName,
     companyName,
     balance
   };
 
-  const createdRetailer = await new Retailer(retailer).save();
-
-  res.send(createdRetailer);
+  try {
+    const createdRetailer = await new Retailer(retailer).save();
+    res.json(createdRetailer);
+  } catch (err) {
+    res.json(errorObj.sendError(err.code));
+  }
 };
 
 /** update retailer */
 exports.updateRetailer = async (req, res) => {
-  const id = req.params.id;
-  const { companyName, balance } = { ...req.body };
+  const { error } = Joi.validate(req.body, validation.retailerUpdateSchema);
 
-  if (!companyName && !balance) {
+  if (error) {
+    res.status(ERR_601);
+    res.json(errorObj.sendError(ERR_601, error.details[0].message));
+    return;
+  }
+
+  const { retailerName, companyName, balance } = { ...req.body };
+
+  if (!retailerName
+    && !companyName
+    && !balance
+  ) {
+    res.sendStatus(403);
     return;
   }
 
   let updateObject = {};
-  let updatedRetailer;
+  const id = req.params.id;
+
+  if (retailerName) {
+    updateObject.retailerName = retailerName;
+  }
 
   if (companyName) {
     updateObject.companyName = companyName;
@@ -64,22 +96,24 @@ exports.updateRetailer = async (req, res) => {
   }
 
   try {
-    updatedRetailer = await Retailer.findOneAndUpdate(
-      { _id: id },
+    const updatedRetailer = await Retailer.findOneAndUpdate(
+      { retailerId: id },
       { $set: updateObject },
       { new: true }
     );
+    res.json(updatedRetailer);
   } catch (err) {
-    res.status(422).send(`Not a valid id: ${id}`);
+    res.json(errorObj.sendError(err.code, 'Id not found'));
   }
-
-  res.send(updatedRetailer);
 };
 
 /** delete retailer */
 exports.deleteRetailer = async (req, res) => {
   const id = req.params.id;
-  const detetedRetailer = await Retailer.deleteOne({ _id: id });
-
-  res.status(400).send(detetedRetailer);
+  try {
+    const detetedRetailer = await Retailer.deleteOne({ retailerId: id });
+    res.json(detetedRetailer);
+  } catch (err) {
+    res.json(errorObj.sendError(err.code, 'Id not found'));
+  }
 };

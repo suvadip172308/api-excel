@@ -1,6 +1,13 @@
 const Joi = require('joi');
 
-exports.retailerSchema = Joi.object().keys({
+exports.retailerUpdateSchema = Joi.object().keys({
+  retailerName: Joi.string().min(3).max(150),
+  companyName: Joi.string().min(3).max(150),
+  balance: Joi.number().integer()
+});
+
+exports.retailerSaveSchema = Joi.object().keys({
+  retailerId: Joi.string().min(2).max(100).required(),
   retailerName: Joi.string().min(3).max(150).required(),
   companyName: Joi.string().min(3).max(150).required(),
   balance: Joi.number().integer()
