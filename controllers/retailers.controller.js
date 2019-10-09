@@ -2,7 +2,6 @@ const Joi = require('joi');
 
 const { Retailer } = require('../models/model.js');
 const validation = require('../validation/retailer.validation');
-const { ERR_601 } = require('../shared/const');
 const errorObj = require('../shared/error');
 
 /** get retailers */
@@ -36,8 +35,8 @@ exports.createRetailer = async (req, res) => {
   const { error } = Joi.validate(req.body, validation.retailerSaveSchema);
 
   if (error) {
-    res.status(ERR_601);
-    res.send(errorObj.sendError(ERR_601, error.details[0].message));
+    res.status(400);
+    res.send(errorObj.sendError(400, error.details[0].message));
     return;
   }
 
@@ -56,6 +55,7 @@ exports.createRetailer = async (req, res) => {
     const createdRetailer = await new Retailer(retailer).save();
     res.json(createdRetailer);
   } catch (err) {
+    res.status(403);
     res.json(errorObj.sendError(err.code));
   }
 };
@@ -65,8 +65,8 @@ exports.updateRetailer = async (req, res) => {
   const { error } = Joi.validate(req.body, validation.retailerUpdateSchema);
 
   if (error) {
-    res.status(ERR_601);
-    res.json(errorObj.sendError(ERR_601, error.details[0].message));
+    res.status(400);
+    res.json(errorObj.sendError(400, error.details[0].message));
     return;
   }
 
@@ -76,7 +76,7 @@ exports.updateRetailer = async (req, res) => {
     && !companyName
     && !balance
   ) {
-    res.sendStatus(403);
+    res.json(errorObj.sendError(403));
     return;
   }
 

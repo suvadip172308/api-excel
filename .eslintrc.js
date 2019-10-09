@@ -17,6 +17,7 @@ module.exports = {
       "error",
       2
     ],
-    "strict": 0
+    "strict": 0,
+    "no-use-before-define": 0
   }
 };

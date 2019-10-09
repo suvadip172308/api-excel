@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+/** Retailer */
 const RetailerSchema = new mongoose.Schema({
   retailerId: {
     type: String,
@@ -28,6 +29,30 @@ const RetailerSchema = new mongoose.Schema({
   }
 });
 
+/** User */
+const UserSchema = new mongoose.Schema({
+  userName: {
+    type: String,
+    required: true,
+    minlength: 3,
+    maxlength: 50,
+    unique: true,
+    dropDups: true,
+    index: true
+  },
+  password: {
+    type: String,
+    required: true,
+    minlength: 4
+  },
+  isActive: {
+    type: Boolean,
+    default: false
+  }
+});
+
+
 module.exports = {
-  RetailerSchema
+  RetailerSchema,
+  UserSchema
 };

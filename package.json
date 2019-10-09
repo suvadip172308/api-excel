@@ -26,10 +26,17 @@
   "dependencies": {
     "express": "4.17.1",
     "joi": "^14.3.1",
+    "joi-password-complexity": "^3.1.0",
+    "lodash": "^4.17.15",
     "mongoose": "5.7.1"
   },
   "devDependencies": {
+    "config": "^3.2.3",
+    "debug": "^4.1.1",
     "eslint": "^6.5.1",
-    "eslint-config-airbnb-base": "^14.0.0"
+    "eslint-config-airbnb-base": "^14.0.0",
+    "fs": "0.0.1-security",
+    "morgan": "^1.9.1",
+    "rotating-file-stream": "^1.4.4"
   }
 }
