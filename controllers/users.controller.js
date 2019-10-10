@@ -1,5 +1,6 @@
 const Joi = require('joi');
 const _ = require('lodash');
+const bcrypt = require('bcrypt');
 
 const validation = require('../validation/user.validation');
 const { User } = require('../models/model.js');
@@ -13,7 +14,7 @@ exports.createUser = async (req, res) => {
     return res.json(errorObj.sendError(400, error.details[0].message));
   }
 
-  const { userName, password } = _.pick(req.body, ['userName', 'password']);
+  let { userName, password } = _.pick(req.body, ['userName', 'password']);
   const user = await User.findOne({ userName });
 
   if (user) {
@@ -22,11 +23,14 @@ exports.createUser = async (req, res) => {
   }
 
   try {
+    const salt = await bcrypt.genSalt(10);
+    password = await bcrypt.hash(password, salt);
     const createdUser = await new User({ userName, password }).save();
-    return res.json(_.pick(createdUser, ['_id', 'userName']));
+    return res.json(_.pick(createdUser, ['_id', 'userName', 'isActive']));
   } catch (err) {
+    console.debug('Error:', err);
     res.status(400);
-    return res.json(errorObj(err.code, 'User can not be created'));
+    return res.json(errorObj.sendError(err.code, 'User can not be created'));
   }
 };
 
@@ -43,7 +47,7 @@ exports.findUserName = async (req, res) => {
 
   return res.status(200).json({
     userName,
-    isValid: !user
+    isAvailable: !user
   });
 };
 

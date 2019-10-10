@@ -2,9 +2,10 @@ const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 
+const { getStream } = require('./shared/common');
 const retailers = require('./routes/retailers.route');
 const users = require('./routes/users.route');
-const { getStream } = require('./shared/common');
+const auth = require('./routes/auth.route');
 
 const app = express();
 
@@ -29,6 +30,7 @@ if (app.get('env') === 'development') {
 }
 
 app.use('/api/users', users);
+app.use('/api/auth', auth);
 app.use('/api/retailers', retailers);
 
 const port = process.env.PORT || 3000;
