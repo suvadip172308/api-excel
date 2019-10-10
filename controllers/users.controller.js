@@ -41,8 +41,21 @@ exports.findUserName = async (req, res) => {
   const { userName } = _.pick(req.body, ['userName']);
   const user = await User.findOne({ userName });
 
-  res.status(200).json({
+  return res.status(200).json({
     userName,
-    isValid: !!user
+    isValid: !user
   });
+};
+
+exports.getUser = async (req, res) => {
+  try {
+    const users = await User.find().select({
+      password: 0
+    });
+
+    return res.status(200).json(users);
+  } catch (err) {
+    res.status(400);
+    return res.json(errorObj.sendError(err.code, 'Operation is not permitted'));
+  }
 };

@@ -18,6 +18,7 @@ module.exports = {
       2
     ],
     "strict": 0,
-    "no-use-before-define": 0
+    "no-use-before-define": 0,
+    "linebreak-style": 0
   }
 };
