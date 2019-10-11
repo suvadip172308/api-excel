@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
+const config = require('config');
 
 const { getStream } = require('./shared/common');
 const retailers = require('./routes/retailers.route');
@@ -10,6 +11,11 @@ const auth = require('./routes/auth.route');
 const app = express();
 
 const DB_URL = process.env.MONGODB_URI || 'mongodb://localhost/excel';
+
+if (!config.get('jwtKey')) {
+  console.log('FATAL ERROR: jwt key is not set');
+  process.exit(1);
+}
 
 mongoose.connect(DB_URL, { useFindAndModify: false })
   .then(() => console.log('Connected to Mongodb...'))

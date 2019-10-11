@@ -1,6 +1,8 @@
 const Joi = require('joi');
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const config = require('config');
 
 const validation = require('../validation/user.validation');
 const { User } = require('../models/model.js');
@@ -29,8 +31,10 @@ exports.login = async (req, res) => {
     return res.json(errorObj.sendError(400, 'Invalid user name or password'));
   }
 
+  const token = jwt.sign({ userName, isAdmin: false }, config.get('jwtKey'));
+
   return res.status(200).json({
     userName,
-    isLoggedIn: true
+    token
   });
 };
