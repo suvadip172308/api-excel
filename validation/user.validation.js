@@ -13,7 +13,16 @@ const complexityOptions = {
 exports.createUserSchema = Joi.object().keys({
   userName: Joi.string().min(3).max(50).required(),
   name: Joi.string().min(3).max(100).required(),
-  password: new PasswordComplexity(complexityOptions).required()
+  password: new PasswordComplexity(complexityOptions).required(),
+  companies: Joi.array().items(Joi.string().min(2).max(100)).min(1).max(10)
+    .unique()
+    .required()
+});
+
+exports.updateUserSchema = Joi.object().keys({
+  name: Joi.string().min(3).max(100),
+  companies: Joi.array().items(Joi.string().min(2).max(100)).min(1).max(10)
+    .unique()
 });
 
 exports.findUserSchema = Joi.object().keys({
@@ -23,4 +32,8 @@ exports.findUserSchema = Joi.object().keys({
 exports.loginSchema = Joi.object().keys({
   userName: Joi.string().min(3).max(50).required(),
   password: Joi.string().min(3).max(50).required()
+});
+
+exports.userIdSchema = Joi.object().keys({
+  id: Joi.string().min(3).max(255).required()
 });

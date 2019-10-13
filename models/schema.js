@@ -45,8 +45,14 @@ const UserSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    minlength: 6,
+    minlength: 2,
     maxlength: 255
+  },
+  companies: {
+    type: [String],
+    required: true,
+    minlength: 2,
+    maxlength: 200
   },
   password: {
     type: String,
@@ -57,11 +63,19 @@ const UserSchema = new mongoose.Schema({
   isActive: {
     type: Boolean,
     default: false
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false
   }
 });
 
 UserSchema.methods.generateAuthToken = function () {
-  return jwt.sign({ _id: this._id }, config.get('jwtKey'));
+  return jwt.sign({
+    _id: this._id,
+    isAdmin: this.isAdmin,
+    isActive: this.isActive
+  }, config.get('jwtKey'));
 };
 
 

@@ -29,11 +29,6 @@ exports.login = async (req, res) => {
     return res.json(errorObj.sendError(401, 'Invalid user name or password'));
   }
 
-  /* if (!user.isActive) {
-    res.status(401);
-    return res.json(errorObj.sendError(401, 'User is not active'));
-  } */
-
   const token = user.generateAuthToken();
 
   return res.header('x-auth-token', token)
