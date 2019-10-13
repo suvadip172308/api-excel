@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
+const config = require('config');
 
 /** Retailer */
 const RetailerSchema = new mongoose.Schema({
@@ -40,6 +42,12 @@ const UserSchema = new mongoose.Schema({
     dropDups: true,
     index: true
   },
+  name: {
+    type: String,
+    required: true,
+    minlength: 6,
+    maxlength: 255
+  },
   password: {
     type: String,
     required: true,
@@ -51,6 +59,10 @@ const UserSchema = new mongoose.Schema({
     default: false
   }
 });
+
+UserSchema.methods.generateAuthToken = function () {
+  return jwt.sign({ _id: this._id }, config.get('jwtKey'));
+};
 
 
 module.exports = {

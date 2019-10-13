@@ -14,7 +14,7 @@ exports.createUser = async (req, res) => {
     return res.json(errorObj.sendError(400, error.details[0].message));
   }
 
-  let { userName, password } = _.pick(req.body, ['userName', 'password']);
+  let { userName, name, password } = _.pick(req.body, ['userName', 'name', 'password']);
   const user = await User.findOne({ userName });
 
   if (user) {
@@ -25,10 +25,9 @@ exports.createUser = async (req, res) => {
   try {
     const salt = await bcrypt.genSalt(10);
     password = await bcrypt.hash(password, salt);
-    const createdUser = await new User({ userName, password }).save();
-    return res.json(_.pick(createdUser, ['_id', 'userName', 'isActive']));
+    const createdUser = await new User({ userName, name, password }).save();
+    return res.json(_.pick(createdUser, ['_id', 'userName', 'name', 'isActive']));
   } catch (err) {
-    console.debug('Error:', err);
     res.status(400);
     return res.json(errorObj.sendError(err.code, 'User can not be created'));
   }

@@ -1,8 +1,6 @@
 const Joi = require('joi');
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const config = require('config');
 
 const validation = require('../validation/user.validation');
 const { User } = require('../models/model.js');
@@ -20,21 +18,27 @@ exports.login = async (req, res) => {
   const user = await User.findOne({ userName });
 
   if (!user) {
-    res.status(400);
-    return res.json(errorObj.sendError(400, 'Invalid user name or password'));
+    res.status(401);
+    return res.json(errorObj.sendError(401, 'Invalid user name or password'));
   }
 
   const isValidPasword = await bcrypt.compare(password, user.password);
 
   if (!isValidPasword) {
-    res.status(400);
-    return res.json(errorObj.sendError(400, 'Invalid user name or password'));
+    res.status(401);
+    return res.json(errorObj.sendError(401, 'Invalid user name or password'));
   }
 
-  const token = jwt.sign({ userName, isAdmin: false }, config.get('jwtKey'));
+  /* if (!user.isActive) {
+    res.status(401);
+    return res.json(errorObj.sendError(401, 'User is not active'));
+  } */
 
-  return res.status(200).json({
-    userName,
-    token
-  });
+  const token = user.generateAuthToken();
+
+  return res.header('x-auth-token', token)
+    .status(200).json({
+      userName,
+      name: user.name
+    });
 };

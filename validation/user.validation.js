@@ -12,6 +12,7 @@ const complexityOptions = {
 
 exports.createUserSchema = Joi.object().keys({
   userName: Joi.string().min(3).max(50).required(),
+  name: Joi.string().min(3).max(100).required(),
   password: new PasswordComplexity(complexityOptions).required()
 });
 
