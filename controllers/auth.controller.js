@@ -31,7 +31,7 @@ exports.login = async (req, res) => {
 
   const token = user.generateAuthToken();
 
-  return res.header('x-auth-token', token)
+  return res.header('Authorization', token)
     .status(200).json({
       userName,
       name: user.name

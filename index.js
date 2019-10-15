@@ -4,6 +4,7 @@ const morgan = require('morgan');
 const config = require('config');
 
 const { getStream } = require('./shared/common');
+const cors = require('./middleware/cors');
 const retailers = require('./routes/retailers.route');
 const users = require('./routes/users.route');
 const auth = require('./routes/auth.route');
@@ -24,6 +25,7 @@ mongoose.connect(DB_URL, { useFindAndModify: false })
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors);
 
 if (app.get('env') === 'development') {
   const { accessLogStream, errorLogStream } = getStream();
