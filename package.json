@@ -25,14 +25,14 @@
   "homepage": "https://github.com/suvadip172308/api-excel#readme",
   "dependencies": {
     "bcrypt": "^3.0.6",
+    "config": "^3.2.3",
     "express": "4.17.1",
+    "fs": "0.0.1-security",
     "joi": "^14.3.1",
     "joi-password-complexity": "^3.1.0",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.15",
     "mongoose": "5.7.1",
-    "config": "^3.2.3",
-    "fs": "0.0.1-security",
     "morgan": "^1.9.1",
     "rotating-file-stream": "^1.4.4"
   },
@@ -40,6 +40,5 @@
     "debug": "^4.1.1",
     "eslint": "^6.5.1",
     "eslint-config-airbnb-base": "^14.0.0"
-    
   }
 }
