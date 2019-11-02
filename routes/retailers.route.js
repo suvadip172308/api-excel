@@ -23,7 +23,7 @@ router.put('/:id', [auth, admin], (req, res) => {
   retailerController.updateRetailer(req, res);
 });
 
-/** delete retailer */
+/** delete retailer only admin */
 router.delete('/:id', [auth, admin], (req, res) => {
   retailerController.deleteRetailer(req, res);
 });

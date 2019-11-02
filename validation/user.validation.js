@@ -11,10 +11,10 @@ const complexityOptions = {
 };
 
 exports.createUserSchema = Joi.object().keys({
-  userName: Joi.string().min(3).max(50).required(),
-  name: Joi.string().min(3).max(100).required(),
+  userName: Joi.string().min(3).max(10).required(),
+  name: Joi.string().min(3).max(50).required(),
   password: new PasswordComplexity(complexityOptions).required(),
-  companies: Joi.array().items(Joi.string().min(2).max(100)).min(1).max(10)
+  companies: Joi.array().items(Joi.string().min(2).max(50)).min(1).max(100)
     .unique()
     .required()
 });

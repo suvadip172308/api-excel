@@ -8,6 +8,7 @@ const cors = require('./middleware/cors');
 const retailers = require('./routes/retailers.route');
 const users = require('./routes/users.route');
 const auth = require('./routes/auth.route');
+const transaction = require('./routes/transaction.route');
 
 const app = express();
 
@@ -40,6 +41,7 @@ if (app.get('env') === 'development') {
 app.use('/api/users', users);
 app.use('/api/auth', auth);
 app.use('/api/retailers', retailers);
+app.use('/api/transaction', transaction);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listining at port no: ${port} ...`));
