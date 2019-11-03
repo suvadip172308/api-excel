@@ -22,11 +22,15 @@ exports.getRetailerDetails = async (req, res) => {
   const id = req.params.id;
 
   try {
-    const retailer = await Retailer.findOne({ retailerId: id });
+    const retailer = this.getRetailerById(id);
     res.json(retailer);
   } catch (err) {
     res.send(errorObj.sendError(err.code, 'Id not found'));
   }
+};
+
+exports.getRetailerById = async (id) => {
+  await Retailer.findOne({ retailerId: id });
 };
 
 
@@ -80,8 +84,19 @@ exports.updateRetailer = async (req, res) => {
     return;
   }
 
+  try {
+    const id = req.params.id;
+    const updatedRetailer = this.modifyRetailer(id, req.body);
+    return res.status(200).json(updatedRetailer);
+  } catch (err) {
+    return res.json(errorObj.sendError(err.code, 'Id not found'));
+  }
+};
+
+exports.modifyRetailer = async (id, payload) => {
+  const { retailerName, companyName, balance } = { ...payload };
+
   let updateObject = {};
-  const id = req.params.id;
 
   if (retailerName) {
     updateObject.retailerName = retailerName;
@@ -95,16 +110,11 @@ exports.updateRetailer = async (req, res) => {
     updateObject.balance = balance;
   }
 
-  try {
-    const updatedRetailer = await Retailer.findOneAndUpdate(
-      { retailerId: id },
-      { $set: updateObject },
-      { new: true }
-    );
-    res.json(updatedRetailer);
-  } catch (err) {
-    res.json(errorObj.sendError(err.code, 'Id not found'));
-  }
+  await Retailer.findOneAndUpdate(
+    { retailerId: id },
+    { $set: updateObject },
+    { new: true }
+  );
 };
 
 /** delete retailer */

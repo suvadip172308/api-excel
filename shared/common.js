@@ -1,6 +1,7 @@
 const fs = require('fs');
 const rfs = require('rotating-file-stream');
 const path = require('path');
+var moment = require('moment');
 
 module.exports.getStream = () => {
   const logDirectory = path.join(__dirname, '../logs');
@@ -25,4 +26,9 @@ module.exports.getStream = () => {
     accessLogStream,
     errorLogStream
   };
+};
+
+/** Get today's date */
+module.exports.getDate = () => {
+  return moment().format('YYYY-MM-DD HH:mm:ss');
 };

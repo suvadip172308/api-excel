@@ -14,3 +14,16 @@ exports.transactionCreateSchema = Joi.object().keys({
     .required(),
   operatorName: Joi.string().min(3).max(200).required()
 });
+
+exports.transactionUpdateSchema = Joi.object().keys({
+  retailerId: Joi.string().min(2).max(20),
+  retailerName: Joi.string().min(3).max(200),
+  companyName: Joi.string().min(3).max(200),
+  routeCode: Joi.string().min(3).max(20),
+  routeName: Joi.string().min(3).max(200),
+  agentName: Joi.string().min(3).max(200),
+  invoiceId: Joi.string().min(3).max(100),
+  invoiceAmount: Joi.number().min(1).precision(2),
+  payment: Joi.number().min(1).precision(2),
+  operatorName: Joi.string().min(3).max(200)
+});

@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const config = require('config');
 
+const { getDate } = require('../shared/common');
+
 /** Retailer */
 /** NB: may be company ubder a retailer is an array */
 const RetailerSchema = new mongoose.Schema({
@@ -143,11 +145,19 @@ const TransactionSchema = new mongoose.Schema({
   },
   creationDate: {
     type: Date,
-    default: Date.now
+    default: getDate()
   },
   updationDate: {
     type: Date,
-    default: Date.now
+    default: getDate()
+  },
+  isApproved: {
+    type: Boolean,
+    default: false
+  },
+  isUpdated: {
+    type: Boolean,
+    default: false
   }
 });
 
