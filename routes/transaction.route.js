@@ -19,12 +19,24 @@ router.post('/', [auth, active], (req, res) => {
   transactionController.createTransaction(req, res);
 });
 
+router.put('/approvals', [auth, admin, active], (req, res) => {
+  transactionController.approveAllTransaction(req, res);
+});
+
+router.put('/approvals/:id', [auth, admin, active], (req, res) => {
+  transactionController.approveTransaction(req, res);
+});
+
 router.put('/:id', [auth, active], (req, res) => {
   transactionController.updateTransaction(req, res);
 });
 
 router.delete('/:id', [auth, admin, active], (req, res) => {
   transactionController.deleteTransaction(req, res);
+});
+
+router.delete('/approvals', [auth, admin, active], (req, res) => {
+  transactionController.deleteUnapprovedTransaction(req, res);
 });
 
 module.exports = router;

@@ -30,7 +30,8 @@ exports.getRetailerDetails = async (req, res) => {
 };
 
 exports.getRetailerById = async (id) => {
-  await Retailer.findOne({ retailerId: id });
+  const retailer = await Retailer.findOne({ retailerId: id });
+  return retailer;
 };
 
 

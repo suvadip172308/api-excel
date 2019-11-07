@@ -7,88 +7,6 @@ const retailerController = require('./retailers.controller');
 const errorObj = require('../shared/error');
 const { getDate } = require('../shared/common');
 
-exports.getTransactions = async (req, res) => {
-  const offset = 20;
-
-  try {
-    const transactions = await Transaction.find()
-      .limit(offset);
-    res.status(200);
-    return res.json(transactions);
-  } catch (err) {
-    return res.json(errorObj.sendError(err.code));
-  }
-};
-
-exports.getTransaction = async (req, res) => {
-  const id = req.params.id;
-
-  try {
-    const transaction = await Transaction.findById(id);
-    res.status(200);
-    return res.json(transaction);
-  } catch (err) {
-    return res.send(errorObj.sendError(err.code));
-  }
-};
-
-/** Create a New Transaction */
-exports.createTransaction = async (req, res) => {
-  const { error } = Joi.validate(req.body, validation.transactionCreateSchema);
-
-  if (error) {
-    res.status(401);
-    res.json(errorObj.sendError(401, error.details[0].message));
-    return;
-  }
-
-  /** validate retailer id with name */
-  const { retailerId } = _.pick(req.body, ['retailerId']);
-  const retailer = retailerController.getRetailerById(retailerId);
-
-  if (!retailer) {
-    res.status(400);
-    return res.json(errorObj.sendError(400, 'Not a valid retailer id.'));
-  }
-  /** Implement: validate route code with route name */
-
-  try {
-    const transaction = { ...req.body };
-    const createTransaction = await new Transaction(transaction).save();
-    res.status(200);
-    return res.json(createTransaction);
-  } catch (err) {
-    console.log('Error :', err);
-    return res.json(errorObj.sendError(400, 'Transaction is not saved'));
-  }
-};
-
-/** Update Transaction */
-exports.updateTransaction = async (req, res) => {
-  const { error } = Joi.validate(req.body, validation.transactionUpdateSchema);
-
-  if (error) {
-    res.status(401);
-    res.json(errorObj.sendError(401, error.details[0].message));
-  }
-
-  const id = req.params.id;
-  const updatedTransaction = getUpdationObject(req.body);
-
-  try {
-    const modifiedTransaction = await Transaction.findOneAndUpdate(
-      { _id: id },
-      { $set: updatedTransaction },
-      { new: true }
-    );
-
-    return res.status(200).json(modifiedTransaction);
-  } catch (err) {
-    res.status(400);
-    return res.json(errorObj.sendError(err.code, 'Invalid Id'));
-  }
-};
-
 function getUpdationObject(payload) {
   const {
     retailerId,
@@ -152,3 +70,166 @@ function getUpdationObject(payload) {
     isUpdated: true
   };
 }
+
+exports.getTransactions = async (req, res) => {
+  const offset = 20;
+
+  try {
+    const transactions = await Transaction.find()
+      .limit(offset);
+    res.status(200);
+    return res.json(transactions);
+  } catch (err) {
+    return res.json(errorObj.sendError(err.code));
+  }
+};
+
+exports.getTransaction = async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const transaction = await Transaction.findById(id);
+    res.status(200);
+    return res.json(transaction);
+  } catch (err) {
+    return res.send(errorObj.sendError(err.code));
+  }
+};
+
+/** Create a New Transaction */
+exports.createTransaction = async (req, res) => {
+  const { error } = Joi.validate(req.body, validation.transactionCreateSchema);
+
+  if (error) {
+    res.status(401);
+    res.json(errorObj.sendError(401, error.details[0].message));
+    return;
+  }
+
+  /** validate retailer id with name */
+  const { retailerId } = _.pick(req.body, ['retailerId']);
+  const retailer = retailerController.getRetailerById(retailerId);
+
+  if (!retailer) {
+    res.status(400);
+    return res.json(errorObj.sendError(400, 'Not a valid retailer id.'));
+  }
+  /** Implement: validate route code with route name */
+
+  try {
+    const transaction = { ...req.body };
+    const createTransaction = await new Transaction(transaction).save();
+    res.status(200);
+    return res.json(createTransaction);
+  } catch (err) {
+    return res.json(errorObj.sendError(400, 'Transaction is not saved'));
+  }
+};
+
+/** Update Transaction */
+exports.updateTransaction = async (req, res) => {
+  console.log('HI, Update Transaction');
+  const { error } = Joi.validate(req.body, validation.transactionUpdateSchema);
+
+  if (error) {
+    res.status(401);
+    res.json(errorObj.sendError(401, error.details[0].message));
+  }
+
+  /** Implement: If update retailerId or name then validate it first */
+  /** validate retailer id with name */
+  const { retailerId } = _.pick(req.body, ['retailerId']);
+  const retailer = retailerController.getRetailerById(retailerId);
+
+  if (!retailer) {
+    res.status(400);
+    return res.json(errorObj.sendError(400, 'Not a valid retailer id.'));
+  }
+  /** Implement: If update routeCode validate it first */
+
+  const id = req.params.id;
+  const updatedTransaction = getUpdationObject(req.body);
+
+  try {
+    const modifiedTransaction = await Transaction.findOneAndUpdate(
+      { _id: id },
+      { $set: updatedTransaction },
+      { new: true }
+    );
+
+    return res.status(200).json(modifiedTransaction);
+  } catch (err) {
+    res.status(400);
+    return res.json(errorObj.sendError(err.code, 'Invalid Id'));
+  }
+};
+
+/** approve a transaction by admin */
+exports.approveTransaction = async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const updatedTransaction = doApproveTransaction(id);
+
+    res.status(200);
+    return res.json(updatedTransaction);
+  } catch (err) {
+    return res.json(errorObj.sendError(err.code, 'Id not found'));
+  }
+};
+
+const doApproveTransaction = async (transactionId) => {
+  const item = await Transaction.findOneAndUpdate(
+    { _id: transactionId },
+    { $set: { isApproved: false } },
+    { new: true }
+  );
+
+  const retailerId = item.retailerId;
+  const retailer = await retailerController.getRetailerById(retailerId);
+  const balance = retailer.balance + (item.invoiceAmount - item.payment);
+  retailerController.modifyRetailer(retailerId, { balance });
+};
+
+/** approved all transaction by admin */
+exports.approveAllTransaction = async (req, res) => {
+  try {
+    let updatedTransaction = [];
+    let item = null;
+
+    const transactions = await Transaction.find(
+      { isApproved: false }
+    ).select('retailerId');
+
+    transactions.forEach(transaction => {
+      item = doApproveTransaction(transaction._id);
+      updatedTransaction.push(item);
+    });
+
+    res.status(200);
+    return res.json(updatedTransaction);
+  } catch (err) {
+    return res.json(errorObj.sendError(err.code, 'Transaction approval failed'));
+  }
+};
+
+/** delete specific transaction */
+exports.deleteTransaction = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const detetedTransaction = await Transaction.deleteOne({ _id: id });
+    res.json(detetedTransaction);
+  } catch (err) {
+    res.json(errorObj.sendError(err.code, 'Id not found for delete transaction'));
+  }
+};
+
+/** clean all unapproved transaction */
+exports.deleteUnapprovedTransaction = async (req, res) => {
+  try {
+    const detetedTransactions = await Transaction.deleteMany({ isApproved: false });
+    res.json(detetedTransactions);
+  } catch (err) {
+    res.json(errorObj.sendError(err.code, 'Id not found for delete unapproved transaction'));
+  }
+};
