@@ -72,13 +72,31 @@ function getUpdationObject(payload) {
 }
 
 exports.getTransactions = async (req, res) => {
-  const offset = 20;
+  const offset = parseInt(req.query.offset, 10);
+  const pageSize = parseInt(req.query.size, 10);
+
+  if (offset < 1) {
+    return res.status(400).json(errorObj.sendError('Offset should more than 0'));
+  }
+
+  if (pageSize > 100) {
+    return res.status(400).json(errorObj.sendError('Page size should less than 100'));
+  }
 
   try {
     const transactions = await Transaction.find()
-      .limit(offset);
+      .skip((offset - 1) * pageSize)
+      .limit(pageSize);
+
+    const count = await Transaction.count();
+
     res.status(200);
-    return res.json(transactions);
+    return res.json({
+      data: transactions,
+      totalElements: count,
+      pageSize,
+      offset
+    });
   } catch (err) {
     return res.json(errorObj.sendError(err.code));
   }
@@ -128,7 +146,6 @@ exports.createTransaction = async (req, res) => {
 
 /** Update Transaction */
 exports.updateTransaction = async (req, res) => {
-  console.log('HI, Update Transaction');
   const { error } = Joi.validate(req.body, validation.transactionUpdateSchema);
 
   if (error) {
