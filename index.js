@@ -40,7 +40,7 @@ if (app.get('env') === 'development') {
 
 app.use('/api/users', users);
 app.use('/api/auth', auth);
-app.use('/api/retailers', retailers);
+app.use('/api/retailer', retailers);
 app.use('/api/transaction', transaction);
 
 const port = process.env.PORT || 3000;
