@@ -72,8 +72,8 @@ function getUpdationObject(payload) {
 }
 
 exports.getTransactions = async (req, res) => {
-  const offset = parseInt(req.query.offset, 10);
-  const pageSize = parseInt(req.query.size, 10);
+  const offset = parseInt(req.query.offset, 10) || 1;
+  const pageSize = parseInt(req.query.size, 10) || 10;
 
   if (offset < 1) {
     return res.status(400).json(errorObj.sendError('Offset should more than 0'));

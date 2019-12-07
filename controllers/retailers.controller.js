@@ -6,12 +6,31 @@ const errorObj = require('../shared/error');
 
 /** get retailers */
 exports.getRetailers = async (req, res) => {
-  const offset = 20;
+  const offset = parseInt(req.query.offset, 10) || 1;
+  const pageSize = parseInt(req.query.size, 10) || 10;
+
+  if (offset < 1) {
+    return res.status(400).json(errorObj.sendError('Offset should more than 0'));
+  }
+
+  if (pageSize > 100) {
+    return res.status(400).json(errorObj.sendError('Page size should less than 100'));
+  }
 
   try {
     const retailers = await Retailer.find()
-      .limit(offset);
-    res.json(retailers);
+      .skip((offset - 1) * pageSize)
+      .limit(pageSize);
+
+    const count = await Retailer.count();
+
+    res.status(200);
+    return res.json({
+      data: retailers,
+      totalElements: count,
+      pageSize,
+      offset
+    });
   } catch (err) {
     res.send(errorObj.sendError(err.code));
   }
