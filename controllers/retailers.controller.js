@@ -41,7 +41,8 @@ exports.getRetailerDetails = async (req, res) => {
   const id = req.params.id;
 
   try {
-    const retailer = this.getRetailerById(id);
+    const retailer = await this.getRetailerById(id);
+    res.status(200);
     res.json(retailer);
   } catch (err) {
     res.send(errorObj.sendError(err.code, 'Id not found'));
