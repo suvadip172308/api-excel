@@ -11,7 +11,6 @@ const RetailerSchema = new mongoose.Schema({
     type: String,
     minlength: 2,
     unique: true,
-    dropDups: true,
     required: true
   },
   retailerName: {
