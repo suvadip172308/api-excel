@@ -19,7 +19,7 @@ router.post('/', [auth, active], (req, res) => {
   retailerController.createRetailer(req, res);
 });
 
-router.put('/:id', [auth, admin], (req, res) => {
+router.put('/:id', [auth, active], (req, res) => {
   retailerController.updateRetailer(req, res);
 });
 
