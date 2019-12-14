@@ -107,7 +107,7 @@ exports.updateRetailer = async (req, res) => {
 
   try {
     const id = req.params.id;
-    const updatedRetailer = this.modifyRetailer(id, req.body);
+    const updatedRetailer = await this.modifyRetailer(id, req.body);
     return res.status(200).json(updatedRetailer);
   } catch (err) {
     return res.json(errorObj.sendError(err.code, 'Id not found'));
@@ -131,11 +131,13 @@ exports.modifyRetailer = async (id, payload) => {
     updateObject.balance = balance;
   }
 
-  await Retailer.findOneAndUpdate(
+  const updatedRetailer = await Retailer.findOneAndUpdate(
     { retailerId: id },
     { $set: updateObject },
     { new: true }
   );
+
+  return updatedRetailer;
 };
 
 /** delete retailer */
