@@ -166,6 +166,7 @@ const PathSchema = new mongoose.Schema({
     type: String,
     minlength: 2,
     maxlength: 20,
+    unique: true,
     required: true
   },
   pathName: {
