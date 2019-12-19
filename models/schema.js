@@ -160,8 +160,29 @@ const TransactionSchema = new mongoose.Schema({
   }
 });
 
+/** Path */
+const PathSchema = new mongoose.Schema({
+  pathId: {
+    type: String,
+    minlength: 2,
+    maxlength: 20,
+    required: true
+  },
+  pathName: {
+    type: String,
+    required: true,
+    minlength: 3,
+    maxlength: 200
+  },
+  isActive: {
+    type: Boolean,
+    default: false
+  }
+});
+
 module.exports = {
   RetailerSchema,
   UserSchema,
-  TransactionSchema
+  TransactionSchema,
+  PathSchema
 };
