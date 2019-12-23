@@ -10,6 +10,7 @@ const users = require('./routes/users.route');
 const auth = require('./routes/auth.route');
 const transaction = require('./routes/transaction.route');
 const path = require('./routes/path.route');
+const files = require('./routes/files.route');
 
 const app = express();
 
@@ -44,6 +45,7 @@ app.use('/api/auth', auth);
 app.use('/api/retailer', retailers);
 app.use('/api/transaction', transaction);
 app.use('/api/path', path);
+app.use('/api/files', files);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listining at port no: ${port} ...`));
