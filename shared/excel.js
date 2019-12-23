@@ -1,11 +1,12 @@
 const xlsx = require('xlsx');
 
-exports.parseExcel = (excelName) => {
-  console.log('In Parse Excel file', excelName);
+exports.parseExcel = (excelFile) => {
+  const filePath = `./public/excels/${excelFile}`;
 
-  const workBook = xlsx.readFile(excelName);
+  const workBook = xlsx.readFile(filePath);
   const sheetNameList = workBook.SheetNames;
   const jsonData = xlsx.utils.sheet_to_json(workBook.Sheets[sheetNameList[0]]);
 
+  console.log('Parsing Excel File: ', excelFile);
   console.log(jsonData);
 };
