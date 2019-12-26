@@ -1,3 +1,5 @@
+const _ = require('lodash');
+
 const excel = require('../shared/excel');
 const pathController = require('../controllers/path.controller');
 const transactionController = require('../controllers/transaction.controller');
@@ -33,6 +35,14 @@ const insertIntoDB = (json, collectionName) => {
 };
 
 const savePath = (json) => {
+  // validate file path.xlsx (in term)
+  const row = json[0];
+  const keyCount = _.keys(row).length;
+
+  if (keyCount !== 2) {
+    return;
+  }
+
   json.forEach(item => {
     const path = {
       pathId: item.Route_Id,
@@ -44,6 +54,13 @@ const savePath = (json) => {
 };
 
 const saveTransaction = (json) => {
+  const row = json[0];
+  const keyCount = _.keys(row).length;
+
+  if (keyCount !== 10) {
+    return;
+  }
+
   json.forEach(item => {
     const transaction = {
       retailerId: item.Retailer_Id,
@@ -63,6 +80,13 @@ const saveTransaction = (json) => {
 };
 
 const saveRetailer = (json) => {
+  const row = json[0];
+  const keyCount = _.keys(row).length;
+
+  if (keyCount !== 4) {
+    return;
+  }
+
   json.forEach(item => {
     const retailer = {
       retailerId: item.Retailer_Id,
