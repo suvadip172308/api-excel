@@ -4,43 +4,39 @@ const excel = require('../shared/excel');
 const pathController = require('../controllers/path.controller');
 const transactionController = require('../controllers/transaction.controller');
 const retailerController = require('../controllers/retailers.controller');
+const errorObj = require('../shared/error');
+const ERR_FILESTRUCTURE = require('../shared/const');
 
 exports.uploadFile = (req, res) => {
   const fileName = req.file.originalname;
-  const collectionName = req.collection || 'retailer';
+  const collectionName = req.body.collection;
 
   const json = excel.parseExcel(fileName);
-  insertIntoDB(json, collectionName);
+  const insertedData = insertIntoDB(json, collectionName);
   excel.deleteFile(fileName);
 
-  res.json({
-    message: 'successfully uploaded'
-  });
+  res.json(insertedData);
 };
 
 const insertIntoDB = (json, collectionName) => {
   switch (collectionName) {
     case 'path':
-      savePath(json);
-      break;
+      return savePath(json);
     case 'transaction':
-      saveTransaction(json);
-      break;
+      return saveTransaction(json);
     case 'retailer':
-      saveRetailer(json);
-      break;
+      return saveRetailer(json);
     default:
       return 0;
   }
 };
 
 const savePath = (json) => {
-  // validate file path.xlsx (in term)
   const row = json[0];
   const keyCount = _.keys(row).length;
 
   if (keyCount !== 2) {
-    return;
+    return errorObj.sendError(ERR_FILESTRUCTURE);
   }
 
   json.forEach(item => {
@@ -49,7 +45,8 @@ const savePath = (json) => {
       pathName: item.Route_Name
     };
 
-    return pathController.insertPath(path);
+    // problem in handle returning promises Promise<pending>
+    pathController.insertPath(path);
   });
 };
 
@@ -58,7 +55,7 @@ const saveTransaction = (json) => {
   const keyCount = _.keys(row).length;
 
   if (keyCount !== 10) {
-    return;
+    return errorObj.sendError(ERR_FILESTRUCTURE);
   }
 
   json.forEach(item => {
@@ -75,7 +72,8 @@ const saveTransaction = (json) => {
       operatorName: item.Operator_Name
     };
 
-    return transactionController.insertTransaction(transaction);
+    // problem in handle returning promises Promise<pending>
+    transactionController.insertTransaction(transaction);
   });
 };
 
@@ -84,7 +82,7 @@ const saveRetailer = (json) => {
   const keyCount = _.keys(row).length;
 
   if (keyCount !== 4) {
-    return;
+    return errorObj.sendError(ERR_FILESTRUCTURE);
   }
 
   json.forEach(item => {
@@ -95,6 +93,6 @@ const saveRetailer = (json) => {
       balance: item.Balance
     };
 
-    return retailerController.insertRetailer(retailer);
+    retailerController.insertRetailer(retailer);
   });
 };

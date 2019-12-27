@@ -8,9 +8,6 @@ exports.parseExcel = (excelFile) => {
   const sheetNameList = workBook.SheetNames;
   const jsonFormatedData = xlsx.utils.sheet_to_json(workBook.Sheets[sheetNameList[0]]);
 
-  console.log('Parsing Excel File: ', excelFile);
-  console.log(jsonFormatedData);
-
   return jsonFormatedData;
 };
 
@@ -23,8 +20,6 @@ exports.deleteFile = (fileName) => {
       new Error('File cant be deleted');
       return false;
     }
-
-    console.log('File Successfully Deleted');
 
     return true;
   });
