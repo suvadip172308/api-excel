@@ -7,31 +7,35 @@ const retailerController = require('../controllers/retailers.controller');
 const errorObj = require('../shared/error');
 const ERR_FILESTRUCTURE = require('../shared/const');
 
-exports.uploadFile = (req, res) => {
+exports.uploadFile = async (req, res) => {
   const fileName = req.file.originalname;
   const collectionName = req.body.collection;
 
   const json = excel.parseExcel(fileName);
-  const insertedData = insertIntoDB(json, collectionName);
+  const insertedData = await insertIntoDB(json, collectionName);
   excel.deleteFile(fileName);
 
   res.json(insertedData);
 };
 
-const insertIntoDB = (json, collectionName) => {
+const insertIntoDB = async (json, collectionName) => {
   switch (collectionName) {
-    case 'path':
-      return savePath(json);
-    case 'transaction':
-      return saveTransaction(json);
-    case 'retailer':
-      return saveRetailer(json);
-    default:
-      return 0;
+  case 'path':
+    const pathList = await savePath(json);
+    return pathList;
+  case 'transaction':
+    const transactionList = await saveTransaction(json);
+    return transactionList;
+  case 'retailer':
+    const retailerList = await saveRetailer(json);
+    return retailerList;
+  default:
+    return 0;
   }
 };
 
 const savePath = (json) => {
+  let paths = [];
   const row = json[0];
   const keyCount = _.keys(row).length;
 
@@ -39,18 +43,21 @@ const savePath = (json) => {
     return errorObj.sendError(ERR_FILESTRUCTURE);
   }
 
-  json.forEach(item => {
+  for (let item of json) {
     const path = {
       pathId: item.Route_Id,
       pathName: item.Route_Name
     };
 
-    // problem in handle returning promises Promise<pending>
-    pathController.insertPath(path);
-  });
+    const newPath = pathController.insertPath(path);
+    paths.push(newPath);
+  }
+
+  return paths;
 };
 
 const saveTransaction = (json) => {
+  let transactions = [];
   const row = json[0];
   const keyCount = _.keys(row).length;
 
@@ -58,7 +65,7 @@ const saveTransaction = (json) => {
     return errorObj.sendError(ERR_FILESTRUCTURE);
   }
 
-  json.forEach(item => {
+  for (let item of json) {
     const transaction = {
       retailerId: item.Retailer_Id,
       retailerName: item.Retailer_Name,
@@ -72,12 +79,15 @@ const saveTransaction = (json) => {
       operatorName: item.Operator_Name
     };
 
-    // problem in handle returning promises Promise<pending>
-    transactionController.insertTransaction(transaction);
-  });
+    const newTransaction = transactionController.insertTransaction(transaction);
+    transactions.push(newTransaction);
+  }
+
+  return transactions;
 };
 
-const saveRetailer = (json) => {
+const saveRetailer = async (json) => {
+  const reatilers = [];
   const row = json[0];
   const keyCount = _.keys(row).length;
 
@@ -85,7 +95,7 @@ const saveRetailer = (json) => {
     return errorObj.sendError(ERR_FILESTRUCTURE);
   }
 
-  json.forEach(item => {
+  for (let item of json) {
     const retailer = {
       retailerId: item.Retailer_Id,
       retailerName: item.Retailer_Name,
@@ -93,6 +103,9 @@ const saveRetailer = (json) => {
       balance: item.Balance
     };
 
-    retailerController.insertRetailer(retailer);
-  });
+    const newRetailers = await retailerController.insertRetailer(retailer);
+    reatilers.push(newRetailers);
+  }
+
+  return reatilers;
 };

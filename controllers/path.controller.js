@@ -66,7 +66,7 @@ exports.createPath = async (req, res) => {
 
   try {
     const path = await this.insertPath(req.body);
-    res.status(200).json(path);
+    res.json(path);
   } catch (err) {
     res.status(500).sendError('Data is not saved');
   }

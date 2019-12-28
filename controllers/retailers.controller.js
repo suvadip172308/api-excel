@@ -65,10 +65,9 @@ exports.createRetailer = async (req, res) => {
     return;
   }
 
-  const retailer = this.insertRetailer(req.body);
+  const retailer = await this.insertRetailer(req.body);
 
   res.json(retailer);
-
 };
 
 exports.insertRetailer = async (payload) => {
