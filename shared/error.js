@@ -1,6 +1,7 @@
 const {
   ERR_11000,
-  ERR_11000_MESSAGE
+  ERR_11000_MESSAGE,
+  ERR_FILESTRUCTURE
 } = require('../shared/const');
 
 function createErrorJSON(errCode, errMessage) {
@@ -12,11 +13,13 @@ function createErrorJSON(errCode, errMessage) {
   };
 }
 
-exports.sendError = (errCode, errMessage = null) => {
-  switch (errCode) {
-  case ERR_11000:
-    return createErrorJSON(errCode, errMessage || ERR_11000_MESSAGE);
-  default:
-    return createErrorJSON(errCode, errMessage || 'Unkown error Occured');
+exports.sendError = (err, errMessage = null) => {
+  switch (err) {
+    case ERR_11000:
+      return createErrorJSON(err, errMessage || ERR_11000_MESSAGE);
+    case ERR_FILESTRUCTURE:
+      return createErrorJSON(err, errMessage || ERR_FILESTRUCTURE);
+    default:
+      return createErrorJSON(err, errMessage || 'Unkown error Occured');
   }
 };

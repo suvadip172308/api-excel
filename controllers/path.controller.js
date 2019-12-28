@@ -64,21 +64,25 @@ exports.createPath = async (req, res) => {
     return;
   }
 
+  try {
+    const path = await this.insertPath(req.body);
+    res.json(path);
+  } catch (err) {
+    res.status(500).sendError('Data is not saved');
+  }
+};
+
+/** insert path in db */
+exports.insertPath = async (pathData) => {
   const {
     pathId, pathName
-  } = { ...req.body };
-
-  const path = {
-    pathId,
-    pathName
-  };
+  } = { ...pathData };
 
   try {
-    const createdPath = await new Path(path).save();
-    res.json(createdPath);
+    const createdPath = await new Path({ pathId, pathName }).save();
+    return createdPath;
   } catch (err) {
-    res.status(403);
-    res.json(errorObj.sendError(err.code));
+    return new Error('Insertion in path collection is failed');
   }
 };
 

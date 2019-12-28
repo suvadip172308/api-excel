@@ -124,23 +124,30 @@ exports.createTransaction = async (req, res) => {
     return;
   }
 
+  const transaction = await this.insertTransaction(req.body);
+
+  res.json(transaction);
+};
+
+exports.insertTransaction = async (payload) => {
   /** validate retailer id with name */
-  const { retailerId } = _.pick(req.body, ['retailerId']);
+
+  const { retailerId } = _.pick(payload, ['retailerId']);
   const retailer = retailerController.getRetailerById(retailerId);
 
   if (!retailer) {
-    res.status(400);
-    return res.json(errorObj.sendError(400, 'Not a valid retailer id.'));
+    return errorObj.sendError(400, 'Not a valid retailer id.');
   }
+
   /** Implement: validate route code with route name */
 
+  const transaction = { ...payload };
+
   try {
-    const transaction = { ...req.body };
-    const createTransaction = await new Transaction(transaction).save();
-    res.status(200);
-    return res.json(createTransaction);
+    const createdTransaction = await new Transaction(transaction).save();
+    return createdTransaction;
   } catch (err) {
-    return res.json(errorObj.sendError(400, 'Transaction is not saved'));
+    return errorObj.sendError(400, 'Transaction is not saved');
   }
 };
 

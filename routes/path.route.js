@@ -7,7 +7,7 @@ const active = require('../middleware/active');
 
 const router = express.Router();
 
-router.get('/', auth, (req, res) => {
+router.get('/', [auth, active], (req, res) => {
   pathController.getPaths(req, res);
 });
 

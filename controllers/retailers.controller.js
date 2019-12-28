@@ -65,9 +65,15 @@ exports.createRetailer = async (req, res) => {
     return;
   }
 
+  const retailer = await this.insertRetailer(req.body);
+
+  res.json(retailer);
+};
+
+exports.insertRetailer = async (payload) => {
   const {
     retailerId, retailerName, companyName, balance
-  } = { ...req.body };
+  } = { ...payload };
 
   const retailer = {
     retailerId,
@@ -78,10 +84,9 @@ exports.createRetailer = async (req, res) => {
 
   try {
     const createdRetailer = await new Retailer(retailer).save();
-    res.json(createdRetailer);
+    return createdRetailer;
   } catch (err) {
-    res.status(403);
-    res.json(errorObj.sendError(err.code));
+    return errorObj.sendError(err.code);
   }
 };
 
