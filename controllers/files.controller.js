@@ -34,7 +34,7 @@ const insertIntoDB = async (json, collectionName) => {
   }
 };
 
-const savePath = (json) => {
+const savePath = async (json) => {
   let paths = [];
   const row = json[0];
   const keyCount = _.keys(row).length;
@@ -49,14 +49,14 @@ const savePath = (json) => {
       pathName: item.Route_Name
     };
 
-    const newPath = pathController.insertPath(path);
+    const newPath = await pathController.insertPath(path);
     paths.push(newPath);
   }
 
   return paths;
 };
 
-const saveTransaction = (json) => {
+const saveTransaction = async (json) => {
   let transactions = [];
   const row = json[0];
   const keyCount = _.keys(row).length;
@@ -79,7 +79,7 @@ const saveTransaction = (json) => {
       operatorName: item.Operator_Name
     };
 
-    const newTransaction = transactionController.insertTransaction(transaction);
+    const newTransaction = await transactionController.insertTransaction(transaction);
     transactions.push(newTransaction);
   }
 
