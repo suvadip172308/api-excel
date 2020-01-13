@@ -138,7 +138,11 @@ exports.download = async (req, res) => {
 
   excel.generateExcel(json, fileName);
 
-  res.sendFile(fs.join(__dirname, '../public/download', fileName), fileName);
+  const path = fs.join(__dirname, '../public/download');
+  console.log(path);
+
+  res.set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  res.sendFile(path, fileName);
 
   excel.deleteFile(filePath);
 };

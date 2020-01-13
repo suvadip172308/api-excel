@@ -225,24 +225,10 @@ exports.updateTransaction = async (req, res) => {
   }
 };
 
-/** approve a transaction by admin */
-exports.approveTransaction = async (req, res) => {
-  const id = req.params.id;
-
-  try {
-    const updatedTransaction = doApproveTransaction(id);
-
-    res.status(200);
-    return res.json(updatedTransaction);
-  } catch (err) {
-    return res.json(errorObj.sendError(err.code, 'Id not found'));
-  }
-};
-
 const doApproveTransaction = async (transactionId) => {
   const item = await Transaction.findOneAndUpdate(
     { _id: transactionId },
-    { $set: { isApproved: false } },
+    { $set: { isApproved: true } },
     { new: true }
   );
 
@@ -250,28 +236,36 @@ const doApproveTransaction = async (transactionId) => {
   const retailer = await retailerController.getRetailerById(retailerId);
   const balance = retailer.balance + (item.invoiceAmount - item.payment);
   retailerController.modifyRetailer(retailerId, { balance });
+
+  return item;
 };
 
-/** approved all transaction by admin */
-exports.approveAllTransaction = async (req, res) => {
-  try {
+/** approved transaction or transactions (by admin) */
+exports.approveTransactions = async (req, res) => {
+  const { error } = Joi.validate(req.body, validation.transactionIdsSchema);
+
+  if (error) {
+    res.status(401);
+    res.json(errorObj.sendError(401, error.details[0].message));
+  }
+
+  const transactionIds = req.body.transactionIds || [];
+
+  // try {
     let updatedTransaction = [];
     let item = null;
 
-    const transactions = await Transaction.find(
-      { isApproved: false }
-    ).select('retailerId');
-
-    transactions.forEach(transaction => {
-      item = doApproveTransaction(transaction._id);
+    for (let transactionId of transactionIds) {
+      console.log(transactionId);
+      item = await doApproveTransaction(transactionId);
       updatedTransaction.push(item);
-    });
+    }
 
     res.status(200);
     return res.json(updatedTransaction);
-  } catch (err) {
-    return res.json(errorObj.sendError(err.code, 'Transaction approval failed'));
-  }
+  //} catch (err) {
+    //return res.json(errorObj.sendError(err.code, 'Transaction approval failed'));
+  //}
 };
 
 /** delete specific transaction */

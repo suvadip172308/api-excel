@@ -75,15 +75,15 @@ exports.findRangeRetailer = async (fromPage, toPage, pageSize) => {
     new Error('toPage should be greater or equal to fromPage');
   }
 
-  try {
+  //try {
     const retailers = await Retailer.find()
       .skip((from - 1) * size)
       .limit((to - from) * size);
 
     return retailers;
-  } catch (err) {
-    return err;
-  }
+  //} catch (err) {
+    //return err;
+  //}
 };
 
 exports.getRetailerById = async (id) => {

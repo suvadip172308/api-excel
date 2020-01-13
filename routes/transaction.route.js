@@ -19,12 +19,9 @@ router.post('/', [auth, active], (req, res) => {
   transactionController.createTransaction(req, res);
 });
 
-router.put('/approvals', [auth, admin, active], (req, res) => {
-  transactionController.approveAllTransaction(req, res);
-});
-
-router.put('/approvals/:id', [auth, admin, active], (req, res) => {
-  transactionController.approveTransaction(req, res);
+/** Approve transaction or transactions (by admin) */
+router.put('/approve', [auth, admin, active], (req, res) => {
+  transactionController.approveTransactions(req, res);
 });
 
 router.put('/:id', [auth, active], (req, res) => {

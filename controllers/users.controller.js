@@ -113,7 +113,9 @@ exports.getUser = async (req, res) => {
 /** activate a new user (only admin) */
 exports.changeUserStatus = async (req, res) => {
   const id = req.params.id;
-  const { error } = Joi.validate({ id }, validation.userIdSchema);
+  const isActivate = req.body.isActivate;
+
+  const { error } = Joi.validate({ id, isActivate }, validation.userStatusChangeSchema);
 
   if (error) {
     return res.status(400)
@@ -123,7 +125,7 @@ exports.changeUserStatus = async (req, res) => {
   try {
     const user = await User.findOneAndUpdate(
       { _id: id },
-      { $set: { isActive: true } },
+      { $set: { isActive: isActivate } },
       { new: true }
     ).select('-password');
 
@@ -177,5 +179,22 @@ exports.updateUser = async (req, res) => {
   } catch (err) {
     return res.status(400)
       .json(errorObj.sendError(400, 'Invalid id can not be activated'));
+  }
+};
+
+exports.deleteUser = async (req, res) => {
+  const id = req.params.id;
+  const { error } = Joi.validate({ id }, validation.userIdSchema);
+
+  if (error) {
+    return res.status(400)
+      .json(errorObj.sendError(400, error.details[0].message));
+  }
+
+  try {
+    const detetedUser = await User.deleteOne({ _id: id });
+    res.json(detetedUser);
+  } catch (err) {
+    res.json(errorObj.sendError(err.code, 'Id not found for delete user'));
   }
 };
