@@ -225,8 +225,9 @@ exports.updateTransaction = async (req, res) => {
   }
 };
 
+/** approve a specific transaction */
 const doApproveTransaction = async (transactionId) => {
-  const item = await Transaction.findOneById(transactionId);
+  const item = await Transaction.findById(transactionId);
 
   const retailerId = item.retailerId;
   const retailer = await retailerController.getRetailerById(retailerId);
