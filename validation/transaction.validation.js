@@ -27,3 +27,7 @@ exports.transactionUpdateSchema = Joi.object().keys({
   payment: Joi.number().min(1).precision(2),
   operatorName: Joi.string().min(3).max(200)
 });
+
+exports.transactionIdsSchema = Joi.object().keys({
+  transactionIds: Joi.array().items(Joi.string().min(2).max(100)).min(1).unique()
+});

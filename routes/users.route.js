@@ -24,23 +24,28 @@ router.post('/name', (req, res) => {
 });
 
 /** get all users details (only admin) */
-router.get('/', [auth, admin], (req, res) => {
+router.get('/', [auth, active, admin], (req, res) => {
   return userController.getUsers(req, res);
 });
 
 /** get user details (only admin) */
-router.get('/:id', [auth, admin], (req, res) => {
+router.get('/:id', [auth, active, admin], (req, res) => {
   return userController.getUser(req, res);
 });
 
 /** change user status (activate or deactivate) (only admin) */
-router.put('/status/:id', [auth, admin], (req, res) => {
+router.put('/status/:id', [auth, active, admin], (req, res) => {
   return userController.changeUserStatus(req, res);
 });
 
 /** update user details (only admin) */
-router.put('/:id', [auth, admin], (req, res) => {
+router.put('/:id', [auth, active, admin], (req, res) => {
   return userController.updateUser(req, res);
+});
+
+/** delete user (only admin) */
+router.delete('/:id', [auth, active, admin], (req, res) => {
+  return userController.deleteUser(req, res);
 });
 
 module.exports = router;

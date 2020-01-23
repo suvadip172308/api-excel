@@ -10,7 +10,7 @@ const extList = ['xlsx', 'xls'];
 
 const storage = multer.diskStorage({
   destination: function (req, file, next) {
-    next(null, './public/excels');
+    next(null, './public/upload');
   },
   filename: function (req, file, next) {
     next(null, file.originalname);
@@ -33,8 +33,12 @@ const upload = multer({
 
 const router = express.Router();
 
-router.post('/', [auth, active, upload], (req, res) => {
+router.post('/upload', [auth, active, upload], (req, res) => {
   filesController.uploadFile(req, res);
+});
+
+router.post('/download', [auth, active], (req, res) => {
+  filesController.download(req, res);
 });
 
 module.exports = router;

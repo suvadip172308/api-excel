@@ -37,3 +37,8 @@ exports.loginSchema = Joi.object().keys({
 exports.userIdSchema = Joi.object().keys({
   id: Joi.string().min(3).max(255).required()
 });
+
+exports.userStatusChangeSchema = Joi.object().keys({
+  id: Joi.string().min(3).max(255).required(),
+  isActivate: Joi.boolean().required()
+});

@@ -36,6 +36,43 @@ exports.getPaths = async (req, res) => {
   }
 };
 
+exports.findRangePaths = async (fromPage, toPage, pageSize) => {
+  const size = parseInt(pageSize, 10) || 10;
+
+  const count = await Path.count();
+
+  const totalPage = Math.ceil(count / size);
+
+  const from = parseInt(fromPage, 10) || 1;
+  const to = parseInt(toPage, 10) || totalPage;
+
+  if (from < 1) {
+    new Error('fromPage should greater than 0');
+  }
+
+  if (size > 0) {
+    new Error('pageSize should greater than 0');
+  }
+
+  if (to > count) {
+    new Error(`toPage should less or equal than ${totalPage}`);
+  }
+
+  if (to < from) {
+    new Error('toPage should be greater or equal to fromPage');
+  }
+
+  try {
+    const paths = await Path.find()
+      .skip((from - 1) * size)
+      .limit((to - from) * size);
+
+    return paths;
+  } catch (err) {
+    return err;
+  }
+};
+
 /** Get a retailer */
 exports.getPath = async (req, res) => {
   const id = req.params.id;

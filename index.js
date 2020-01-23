@@ -45,7 +45,7 @@ app.use('/api/auth', auth);
 app.use('/api/retailer', retailers);
 app.use('/api/transaction', transaction);
 app.use('/api/path', path);
-app.use('/api/files', files);
+app.use('/api/file', files);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listining at port no: ${port} ...`));
