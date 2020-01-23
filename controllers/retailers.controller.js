@@ -75,15 +75,15 @@ exports.findRangeRetailer = async (fromPage, toPage, pageSize) => {
     new Error('toPage should be greater or equal to fromPage');
   }
 
-  //try {
+  try {
     const retailers = await Retailer.find()
       .skip((from - 1) * size)
       .limit((to - from) * size);
 
     return retailers;
-  //} catch (err) {
-    //return err;
-  //}
+  } catch (err) {
+    return err;
+  }
 };
 
 exports.getRetailerById = async (id) => {
@@ -182,12 +182,37 @@ exports.modifyRetailer = async (id, payload) => {
   return updatedRetailer;
 };
 
-/** delete retailer */
-exports.deleteRetailer = async (req, res) => {
-  const id = req.params.id;
+const deleteRetailer = async (retailerId) => {
   try {
-    const detetedRetailer = await Retailer.deleteOne({ retailerId: id });
-    res.json(detetedRetailer);
+    const deletedItem = await Retailer.deleteOne({ retailerId });
+    return deletedItem;
+  } catch (err) {
+    throw new Error('Retailer Id is not exist');
+  }
+};
+
+/** delete retailer */
+exports.deleteRetailers = async (req, res) => {
+  const { error } = Joi.validate(req.body, validation.retailerIdsSchema);
+
+  if (error) {
+    res.status(401);
+    res.json(errorObj.sendError(401, error.details[0].message));
+  }
+
+  const retailerIds = req.body.retailerIds;
+  let deleteCount = 0;
+
+  try {
+    for (let retailerId of retailerIds) {
+      const deletedItem = await deleteRetailer(retailerId);
+
+      deleteCount = deletedItem.ok === 1
+        ? deleteCount + deletedItem.deletedCount
+        : deleteCount;
+    }
+
+    res.json({ deletedCount: deleteCount });
   } catch (err) {
     res.json(errorObj.sendError(err.code, 'Id not found'));
   }

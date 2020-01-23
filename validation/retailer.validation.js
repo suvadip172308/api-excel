@@ -12,3 +12,7 @@ exports.retailerSaveSchema = Joi.object().keys({
   companyName: Joi.string().min(3).max(150).required(),
   balance: Joi.number().integer()
 });
+
+exports.retailerIdsSchema = Joi.object().keys({
+  retailerIds: Joi.array().items(Joi.string().min(2).max(100)).min(1).unique()
+});
