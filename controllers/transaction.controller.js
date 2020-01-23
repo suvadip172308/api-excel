@@ -225,8 +225,9 @@ exports.updateTransaction = async (req, res) => {
   }
 };
 
+/** approve a specific transaction */
 const doApproveTransaction = async (transactionId) => {
-  const item = await Transaction.findOneById(transactionId);
+  const item = await Transaction.findById(transactionId);
 
   const retailerId = item.retailerId;
   const retailer = await retailerController.getRetailerById(retailerId);
@@ -258,7 +259,7 @@ exports.approveTransactions = async (req, res) => {
 
   const transactionIds = req.body.transactionIds || [];
 
-  try {
+  //try {
     let updatedTransaction = [];
     let item = null;
 
@@ -269,9 +270,9 @@ exports.approveTransactions = async (req, res) => {
 
     res.status(200);
     return res.json(updatedTransaction);
-  } catch (err) {
+  //} catch (err) {
     return res.json(errorObj.sendError(err.code, 'Transaction approval failed'));
-  }
+  //}
 };
 
 /** delete specific transaction */
