@@ -23,9 +23,9 @@ router.put('/:id', [auth, active], (req, res) => {
   retailerController.updateRetailer(req, res);
 });
 
-/** delete retailer only admin */
-router.delete('/:id', [auth, admin], (req, res) => {
-  retailerController.deleteRetailer(req, res);
+/** delete retailer only by admin */
+router.delete('/', [auth, active, admin], (req, res) => {
+  retailerController.deleteRetailers(req, res);
 });
 
 module.exports = router;
