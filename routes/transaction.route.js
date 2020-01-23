@@ -28,12 +28,8 @@ router.put('/:id', [auth, active], (req, res) => {
   transactionController.updateTransaction(req, res);
 });
 
-router.delete('/:id', [auth, admin, active], (req, res) => {
-  transactionController.deleteTransaction(req, res);
-});
-
-router.delete('/approvals', [auth, admin, active], (req, res) => {
-  transactionController.deleteUnapprovedTransaction(req, res);
+router.delete('/', [auth, admin, active], (req, res) => {
+  transactionController.deleteTransactions(req, res);
 });
 
 module.exports = router;

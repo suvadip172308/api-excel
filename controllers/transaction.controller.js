@@ -226,18 +226,25 @@ exports.updateTransaction = async (req, res) => {
 };
 
 const doApproveTransaction = async (transactionId) => {
-  const item = await Transaction.findOneAndUpdate(
+  const item = await Transaction.findOneById(transactionId);
+
+  const retailerId = item.retailerId;
+  const retailer = await retailerController.getRetailerById(retailerId);
+
+  if (!retailer) {
+    throw new Error('Retailer is not present');
+  }
+
+  const balance = retailer.balance + (item.invoiceAmount - item.payment);
+  retailerController.modifyRetailer(retailerId, { balance });
+
+  const approvedTransaction = await Transaction.findOneAndUpdate(
     { _id: transactionId },
     { $set: { isApproved: true } },
     { new: true }
   );
 
-  const retailerId = item.retailerId;
-  const retailer = await retailerController.getRetailerById(retailerId);
-  const balance = retailer.balance + (item.invoiceAmount - item.payment);
-  retailerController.modifyRetailer(retailerId, { balance });
-
-  return item;
+  return approvedTransaction;
 };
 
 /** approved transaction or transactions (by admin) */
@@ -251,39 +258,52 @@ exports.approveTransactions = async (req, res) => {
 
   const transactionIds = req.body.transactionIds || [];
 
-  // try {
+  try {
     let updatedTransaction = [];
     let item = null;
 
     for (let transactionId of transactionIds) {
-      console.log(transactionId);
       item = await doApproveTransaction(transactionId);
       updatedTransaction.push(item);
     }
 
     res.status(200);
     return res.json(updatedTransaction);
-  //} catch (err) {
-    //return res.json(errorObj.sendError(err.code, 'Transaction approval failed'));
-  //}
+  } catch (err) {
+    return res.json(errorObj.sendError(err.code, 'Transaction approval failed'));
+  }
 };
 
 /** delete specific transaction */
-exports.deleteTransaction = async (req, res) => {
-  const id = req.params.id;
+const deleteTransaction = async (transactionId) => {
   try {
-    const detetedTransaction = await Transaction.deleteOne({ _id: id });
-    res.json(detetedTransaction);
+    const detetedTransaction = await Transaction.deleteOne({ _id: transactionId });
+    return detetedTransaction;
   } catch (err) {
-    res.json(errorObj.sendError(err.code, 'Id not found for delete transaction'));
+    throw new Error('Id not found for delete transaction');
   }
 };
 
 /** clean all unapproved transaction */
-exports.deleteUnapprovedTransaction = async (req, res) => {
+exports.deleteTransactions = async (req, res) => {
+  const { error } = Joi.validate(req.body, validation.transactionIdsSchema);
+
+  if (error) {
+    res.status(401);
+    res.json(errorObj.sendError(401, error.details[0].message));
+  }
+
+  const transactionIds = req.body.transactionIds || [];
+  let deletedCount = 0;
+
   try {
-    const detetedTransactions = await Transaction.deleteMany({ isApproved: false });
-    res.json(detetedTransactions);
+    for (let transactionId of transactionIds) {
+      let deletedItem = await deleteTransaction(transactionId);
+      deletedCount = deletedItem.ok === 1 ? deletedCount + deletedItem.deletedCount : deletedCount;
+    }
+
+    res.status(200);
+    res.json({ deletedCount });
   } catch (err) {
     res.json(errorObj.sendError(err.code, 'Id not found for delete unapproved transaction'));
   }
