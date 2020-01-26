@@ -19,13 +19,18 @@ router.post('/', [auth, active], (req, res) => {
   pathController.createPath(req, res);
 });
 
+/** Activate path by admin */
+router.put('/activate', [auth, admin], (req, res) => {
+  pathController.activatePaths(req, res);
+});
+
 router.put('/:id', [auth, active], (req, res) => {
   pathController.updatePath(req, res);
 });
 
 /** delete retailer only admin */
-router.delete('/:id', [auth, admin], (req, res) => {
-  pathController.deletePath(req, res);
+router.delete('/', [auth, admin], (req, res) => {
+  pathController.deletePaths(req, res);
 });
 
 module.exports = router;

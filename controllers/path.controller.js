@@ -172,3 +172,76 @@ exports.modifyPath = async (id, payload) => {
 
   return updatedPath;
 };
+
+/** activate paths (by admin) */
+const activatePath = async (pathId) => {
+  try {
+    const activatedItem = await Path.findOneAndUpdate(
+      { pathId },
+      { $set: { isActive: true } },
+      { new: true }
+    );
+    return activatedItem;
+  } catch (err) {
+    throw new Error('Path Id does not exist');
+  }
+};
+
+exports.activatePaths = async (req, res) => {
+  const { error } = Joi.validate(req.body, validation.pathIdsSchema);
+
+  if (error) {
+    res.status(401);
+    res.json(errorObj.sendError(401, error.details[0].message));
+  }
+
+  const pathIds = req.body.pathIds;
+  let activatedPaths = [];
+
+  try {
+    for (let pathId of pathIds) {
+      const activatedPath = await activatePath(pathId);
+      activatedPaths.push(activatedPath);
+    }
+
+    res.json({ activatedPaths });
+  } catch (err) {
+    res.json(errorObj.sendError(err.code, 'Id not found'));
+  }
+};
+
+/** delete path (by admin) */
+const deletePath = async (pathId) => {
+  try {
+    const deletedItem = await Path.deleteOne({ pathId });
+    return deletedItem;
+  } catch (err) {
+    throw new Error('Path Id does not exist');
+  }
+};
+
+exports.deletePaths = async (req, res) => {
+  const { error } = Joi.validate(req.body, validation.pathIdsSchema);
+
+  if (error) {
+    res.status(401);
+    res.json(errorObj.sendError(401, error.details[0].message));
+  }
+
+  const pathIds = req.body.pathIds;
+  let deleteCount = 0;
+
+  try {
+    for (let pathId of pathIds) {
+      const deletedItem = await deletePath(pathId);
+
+      deleteCount = deletedItem.ok === 1
+        ? deleteCount + deletedItem.deletedCount
+        : deleteCount;
+    }
+
+    res.json({ deletedCount: deleteCount });
+  } catch (err) {
+    res.json(errorObj.sendError(err.code, 'Id not found'));
+  }
+};
