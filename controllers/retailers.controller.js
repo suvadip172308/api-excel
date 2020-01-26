@@ -182,6 +182,44 @@ exports.modifyRetailer = async (id, payload) => {
   return updatedRetailer;
 };
 
+const activateRetailer = async (retailerId) => {
+  try {
+    const activatedItem = await Retailer.findOneAndUpdate(
+      { retailerId },
+      { $set: { isActivated: true } },
+      { new: true }
+    );
+    return activatedItem;
+  } catch (err) {
+    throw new Error('Path Id does not exist');
+  }
+};
+
+/** Activate retailers (by admin) */
+exports.activateRetailers = async (req, res) => {
+  const { error } = Joi.validate(req.body, validation.retailerIdsSchema);
+
+  if (error) {
+    res.status(401);
+    res.json(errorObj.sendError(401, error.details[0].message));
+  }
+
+  const retailerIds = req.body.retailerIds;
+  let activatedRetailers = [];
+
+  try {
+    for (let retailerId of retailerIds) {
+      const activatedRetailer = await activateRetailer(retailerId);
+      activatedRetailers.push(activatedRetailer);
+    }
+
+    res.json({ activatedRetailers });
+  } catch (err) {
+    res.json(errorObj.sendError(err.code, 'Id not found'));
+  }
+};
+
+/** delete retailers */
 const deleteRetailer = async (retailerId) => {
   try {
     const deletedItem = await Retailer.deleteOne({ retailerId });
@@ -191,7 +229,6 @@ const deleteRetailer = async (retailerId) => {
   }
 };
 
-/** delete retailer */
 exports.deleteRetailers = async (req, res) => {
   const { error } = Joi.validate(req.body, validation.retailerIdsSchema);
 

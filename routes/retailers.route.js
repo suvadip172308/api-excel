@@ -19,12 +19,17 @@ router.post('/', [auth, active], (req, res) => {
   retailerController.createRetailer(req, res);
 });
 
+/** Activate path by admin */
+router.put('/activate', [auth, admin], (req, res) => {
+  retailerController.activateRetailers(req, res);
+});
+
 router.put('/:id', [auth, active], (req, res) => {
   retailerController.updateRetailer(req, res);
 });
 
 /** delete retailer only by admin */
-router.delete('/', [auth, active, admin], (req, res) => {
+router.delete('/', [auth, admin], (req, res) => {
   retailerController.deleteRetailers(req, res);
 });
 
