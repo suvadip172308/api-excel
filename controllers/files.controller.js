@@ -1,6 +1,7 @@
 const _ = require('lodash');
 const Joi = require('joi');
-const fs = require('path');
+const path = require('path');
+const fs = require('fs');
 
 const excel = require('../shared/excel');
 const pathController = require('../controllers/path.controller');
@@ -131,18 +132,21 @@ exports.download = async (req, res) => {
   const pageSize = req.body.pageSize;
 
   const fileName = `${collectionName}.xlsx`;
-  const filePath = `./public/download/${fileName}`;
+  const filePath = `${path.join(__dirname, '../public/download')}/${fileName}`;
 
   const json = await fetchFromDB(collectionName, fromPage, toPage, pageSize);
-  console.log('In Download', json);
 
   excel.generateExcel(json, fileName);
 
-  const path = fs.join(__dirname, '../public/download');
-  console.log(path);
+  const stat = fs.statSync(filePath);
+  const readStream = fs.createReadStream(filePath);
 
-  res.set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-  res.sendFile(path, fileName);
+  res.writeHead(200, {
+    'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'Content-Length': stat.size
+  });
+
+  readStream.pipe(res);
 
   excel.deleteFile(filePath);
 };
