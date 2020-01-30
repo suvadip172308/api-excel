@@ -7,7 +7,6 @@ exports.pathCreateSchema = Joi.object().keys({
 });
 
 exports.pathUpdateSchema = Joi.object().keys({
-  pathId: Joi.string().min(3).max(10),
   pathName: Joi.string().min(3).max(150),
   isActive: Joi.boolean()
 });
