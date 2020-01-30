@@ -133,39 +133,33 @@ exports.updatePath = async (req, res) => {
     return;
   }
 
-  const { pathId, pathName } = { ...req.body };
+  const { pathName } = { ...req.body };
 
-  if (!pathId
-    && !pathName
-  ) {
+  if (!pathName) {
     res.json(errorObj.sendError(403));
     return;
   }
 
   try {
-    const id = req.params.id;
-    const updatedPath = await this.modifyPath(id, req.body);
+    const pathId = req.params.id;
+    const updatedPath = await this.modifyPath(pathId, req.body);
     return res.status(200).json(updatedPath);
   } catch (err) {
     return res.json(errorObj.sendError(err.code, 'Id not found'));
   }
 };
 
-exports.modifyPath = async (id, payload) => {
-  const { pathId, pathName } = { ...payload };
+exports.modifyPath = async (pathId, payload) => {
+  const { pathName } = { ...payload };
 
   let updateObject = {};
-
-  if (pathId) {
-    updateObject.pathId = pathId;
-  }
 
   if (pathName) {
     updateObject.pathName = pathName;
   }
 
   const updatedPath = await Path.findOneAndUpdate(
-    { _id: id },
+    { pathId },
     { $set: updateObject },
     { new: true }
   );
