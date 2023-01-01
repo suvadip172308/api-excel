@@ -25,7 +25,7 @@
   "homepage": "https://github.com/suvadip172308/api-excel#readme",
   "dependencies": {
     "bcrypt": "^3.0.6",
-    "config": "^3.2.3",
+    "config": "^3.3.8",
     "express": "4.17.1",
     "fs": "0.0.1-security",
     "joi": "^14.3.1",
